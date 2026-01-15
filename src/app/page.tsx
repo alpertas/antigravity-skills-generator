@@ -118,11 +118,13 @@ export default function Home() {
           </span>
         </div>
         <a
-          href="#"
+          href="https://github.com/alpertas/antigravity-skills-generator"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-zinc-500 hover:text-zinc-300 transition-colors flex items-center space-x-2 text-sm"
         >
           <Github className="w-4 h-4" />
-          <span>Support</span>
+          <span>GitHub / Contribute</span>
         </a>
       </header>
 
@@ -172,6 +174,24 @@ export default function Home() {
         isOpen={showPrivacy}
         onClose={() => setShowPrivacy(false)} 
       />
+
+      {/* Open Source Toast */}
+      <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 fade-in duration-500">
+        <a
+          href="https://github.com/alpertas/antigravity-skills-generator"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center space-x-3 bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-2xl hover:bg-zinc-800 transition-colors group"
+        >
+          <div className="bg-zinc-800 p-1.5 rounded-md group-hover:bg-zinc-700 transition-colors">
+            <Github className="w-4 h-4 text-white" />
+          </div>
+          <div className="pr-2">
+            <p className="text-xs font-semibold text-zinc-200">Projects is Open Source!</p>
+            <p className="text-[10px] text-zinc-500">PRs are welcome 🚀</p>
+          </div>
+        </a>
+      </div>
     </main>
   );
 }

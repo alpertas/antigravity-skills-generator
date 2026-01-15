@@ -1,7 +1,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Download, Check, Code2, FileText } from "lucide-react";
+import { Copy, Download, Check, Code2, FileText, Lock } from "lucide-react";
+import SupportModal from "./SupportModal";
 
 interface SkillEditorProps {
   markdown: string;
@@ -11,6 +12,7 @@ interface SkillEditorProps {
 export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
   const [copied, setCopied] = useState(false);
     const [displayedText, setDisplayedText] = useState("");
+    const [showSupportModal, setShowSupportModal] = useState(false);
     const autoScrollRef = useRef<HTMLDivElement>(null);
 
     // Typewriter effect logic
@@ -43,7 +45,7 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownload = () => {
+    const executeDownload = () => {
     const blob = new Blob([markdown], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -54,6 +56,21 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+    const handleDownloadClick = () => {
+        const isSupporter = localStorage.getItem("antigravity_supporter");
+        if (isSupporter === "true") {
+            executeDownload();
+        } else {
+            setShowSupportModal(true);
+        }
+    };
+
+    const handleSupportSuccess = () => {
+        localStorage.setItem("antigravity_supporter", "true");
+        setShowSupportModal(false);
+        executeDownload();
+    };
 
   return (
     <div className="h-full bg-zinc-950/50 flex flex-col relative overflow-hidden">
@@ -95,17 +112,19 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                         <div className="flex items-center space-x-2">
                              <button 
                                 onClick={handleCopy}
-                                className="p-2 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-white transition-colors"
+                                  className="flex items-center space-x-2 px-3 py-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-white transition-colors text-xs font-medium"
                                 title="Copy to Clipboard"
                              >
                                 {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                                  <span>{copied ? "Copied!" : "Copy Markdown"}</span>
                              </button>
                              <button 
-                                onClick={handleDownload}
-                                className="p-2 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-white transition-colors"
+                                  onClick={handleDownloadClick}
+                                  className="flex items-center space-x-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md text-xs font-medium transition-colors border border-zinc-700/50"
                                 title="Download File"
                              >
-                                <Download className="w-4 h-4" />
+                                  <Lock className="w-3 h-3 text-pink-500" />
+                                  <span>Download .skill</span>
                              </button>
                         </div>
                     </div>
@@ -125,6 +144,11 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                 </motion.div>
             )}
         </AnimatePresence>
+        <SupportModal 
+            isOpen={showSupportModal}
+            onClose={() => setShowSupportModal(false)}
+            onSuccess={handleSupportSuccess}
+        />
     </div>
   );
 }
