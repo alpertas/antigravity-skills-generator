@@ -4,6 +4,7 @@
 import { useState } from "react";
 import PromptInput from "@/components/PromptInput";
 import SkillEditor from "@/components/SkillEditor";
+import PrivacyModal from "@/components/PrivacyModal";
 import { Github, Orbit } from "lucide-react";
 
 const EXAMPLE_SKILL_MD = `---
@@ -35,6 +36,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState("");
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -45,7 +47,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 flex flex-col font-sans">
+    <main className="h-screen bg-zinc-950 flex flex-col font-sans overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center space-x-3">
@@ -68,7 +70,7 @@ export default function Home() {
       {/* Main Split View */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Left Column: Input */}
-        <section className="w-full md:w-1/2 border-r border-zinc-900 h-[calc(100vh-65px)] overflow-y-auto">
+        <section className="w-full md:w-1/2 border-r border-zinc-900 h-full overflow-y-auto">
           <PromptInput
             input={input}
             setInput={setInput}
@@ -78,13 +80,31 @@ export default function Home() {
         </section>
 
         {/* Right Column: Output */}
-        <section className="w-full md:w-1/2 h-[calc(100vh-65px)] bg-zinc-950/50">
+        <section className="w-full md:w-1/2 h-full bg-zinc-950/50">
           <SkillEditor
             markdown={output}
             isVisible={!!output}
           />
         </section>
       </div>
+
+      {/* Footer */}
+      <footer className="py-2 border-t border-zinc-900/50 bg-zinc-950 text-center z-10">
+        <div className="flex flex-col md:flex-row items-center justify-center space-y-1 md:space-y-0 md:space-x-4 text-xs text-zinc-600">
+          <span>Antigravity Skill Architect is an unofficial community project. Not affiliated with Google.</span>
+          <button
+            onClick={() => setShowPrivacy(true)}
+            className="text-zinc-500 hover:text-zinc-300 underline underline-offset-2 transition-colors"
+          >
+            Terms & Privacy
+          </button>
+        </div>
+      </footer>
+
+      <PrivacyModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+      />
     </main>
   );
 }
