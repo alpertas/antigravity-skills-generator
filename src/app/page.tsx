@@ -5,7 +5,7 @@ import PromptInput from "@/components/PromptInput";
 import SkillEditor from "@/components/SkillEditor";
 import PrivacyModal from "@/components/PrivacyModal";
 import HistorySidebar, { HistoryItem } from "@/components/HistorySidebar";
-import { Github, Orbit, Clock } from "lucide-react";
+import { Github, Clock } from "lucide-react";
 
 const EXAMPLE_SKILL_MD = `---
 name: sample-skill
@@ -110,8 +110,27 @@ export default function Home() {
             <Clock className="w-5 h-5" />
           </button>
 
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
-            <Orbit className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="url(#header-gradient)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-6 h-6"
+            >
+              <defs>
+                <linearGradient id="header-gradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#9333ea" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
           </div>
           <span className="font-semibold text-zinc-100 tracking-tight text-lg flex items-center gap-2">
             Antigravity <span className="text-zinc-500 font-normal">Skill Architect</span>
