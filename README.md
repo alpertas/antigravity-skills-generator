@@ -11,7 +11,7 @@
 
 **Key Features:**
 
-* **✍️ Text-to-Skill:** Simply describe your requirement (e.g., *"Next.js SaaS with Supabase and Tailwind"*), and get a perfectly structured, context-aware `.skill` file.
+* **✍️ Text-to-Skill:** Simply describe your requirement (e.g., *"Next.js SaaS with Supabase and Tailwind"*), and get a perfectly structured, context-aware `.md` file.
 * **🧬 Reverse Engineering (Code-to-Skill):** Paste your existing high-quality code. The AI analyzes your coding style, naming conventions, and architecture to generate a skill that replicates your exact style.
 * **🔒 Privacy First:** No backend. No database. Your Google API keys are stored strictly in your browser's **Local Storage**.
 * **⚡️ Smart Context:** Automatically injects technical best practices for selected stacks (Next.js App Router, Python FastAPI, etc.).
@@ -68,7 +68,7 @@ This tool requires your own API key to function (BYOK - Bring Your Own Key).
 
 ### 4. Export
 * **Copy:** Click the copy icon to use immediately.
-* **Download:** Get the formatted `.skill` file. *(Optional: Support the project via Gumroad to unlock instant downloads).*
+* **Download:** Get the formatted `.md` file. *(Optional: Support the project via Gumroad to unlock instant downloads).*
 
 ---
 
