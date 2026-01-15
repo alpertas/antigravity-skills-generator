@@ -4,6 +4,7 @@
 >
 > *Unofficial, Open Source, and runs entirely in your browser.*
 
+![Project Preview](public/preview.png)
 
 ## 🚀 What is this?
 
@@ -20,7 +21,7 @@
 
 ## 🛠️ Installation & Setup
 
-This project is built with **Next.js 14**, **Tailwind CSS**, and uses the **Google Gemini API** (Client-Side).
+This project is built with **Next.js 14** and uses the **Google Gemini API** directly from the client side.
 
 ### Prerequisites
 
@@ -31,7 +32,7 @@ This project is built with **Next.js 14**, **Tailwind CSS**, and uses the **Goog
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/alpertas/antigravity-skills-generator.git
+    git clone [https://github.com/alpertas/antigravity-skills-generator.git](https://github.com/alpertas/antigravity-skills-generator.git)
     cd antigravity-skills-generator
     ```
 
@@ -47,6 +48,16 @@ This project is built with **Next.js 14**, **Tailwind CSS**, and uses the **Goog
 
 4.  Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### ⚙️ Configuration (API Key)
+
+Since this is a client-side application, **you do not need to configure a `.env` file** to run the project.
+
+Instead, the API key is handled via the UI:
+1.  Launch the app.
+2.  Click the **Key Icon 🔑** in the header.
+3.  Enter your Gemini API Key.
+4.  The key is saved to your browser's `localStorage` for future use.
+
 ---
 
 ## 🔑 How to Use
@@ -57,9 +68,8 @@ This tool requires your own API key to function (BYOK - Bring Your Own Key).
 2.  Click **"Get API Key"**.
 3.  *Note: The free tier is sufficient for personal use.*
 
-### 2. Configure the App
-1.  Click the **Key Icon 🔑** in the application header.
-2.  Paste your API key. It is saved locally to your browser.
+### 2. Enter Key in App
+* Paste your key into the settings menu (Key Icon) within the app.
 
 ### 3. Generate a Skill
 * **Describe Mode:** Type your request naturally.
@@ -68,7 +78,7 @@ This tool requires your own API key to function (BYOK - Bring Your Own Key).
 
 ### 4. Export
 * **Copy:** Click the copy icon to use immediately.
-* **Download:** Get the formatted `.md` file. *(Optional: Support the project via Gumroad to unlock instant downloads).*
+* **Download:** Get the formatted `.md` file ready to be dropped into your `.antigravity/skills/` folder. *(Optional: Support the project via Gumroad to unlock instant downloads).*
 
 ---
 
