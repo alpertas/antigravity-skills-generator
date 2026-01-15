@@ -1,7 +1,5 @@
 
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Download, Check, Code2, FileText } from "lucide-react";
 
@@ -12,6 +10,32 @@ interface SkillEditorProps {
 
 export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
   const [copied, setCopied] = useState(false);
+    const [displayedText, setDisplayedText] = useState("");
+    const autoScrollRef = useRef<HTMLDivElement>(null);
+
+    // Typewriter effect logic
+    useEffect(() => {
+        if (!isVisible) {
+            setDisplayedText("");
+            return;
+        }
+
+        let currentIndex = 0;
+        const interval = setInterval(() => {
+            if (currentIndex < markdown.length) {
+                setDisplayedText(markdown.slice(0, currentIndex + 1));
+                currentIndex++;
+                // Auto-scroll to bottom
+                if (autoScrollRef.current) {
+                    autoScrollRef.current.scrollTop = autoScrollRef.current.scrollHeight;
+                }
+            } else {
+                clearInterval(interval);
+            }
+        }, 5); // 5ms per character for fast typing
+
+        return () => clearInterval(interval);
+    }, [markdown, isVisible]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(markdown);
@@ -87,9 +111,15 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                     </div>
 
                     {/* Editor Content */}
-                    <div className="flex-1 overflow-auto p-6 font-mono text-sm leading-relaxed custom-scrollbar">
+                      <div
+                          ref={autoScrollRef}
+                          className="flex-1 overflow-auto p-6 font-mono text-sm leading-relaxed custom-scrollbar"
+                      >
                         <pre className="whitespace-pre-wrap text-zinc-300">
-                            {markdown}
+                              {displayedText}
+                              {displayedText.length < markdown.length && (
+                                  <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse align-middle" />
+                              )}
                         </pre>
                     </div>
                 </motion.div>
