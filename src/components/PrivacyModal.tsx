@@ -63,6 +63,10 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
                     <h3 className="text-sm font-medium text-zinc-200 mb-1">100% Client-Side Processing</h3>
                     <p className="text-sm text-zinc-400 leading-relaxed">
                       This application runs entirely in your browser. We do not store your prompts, generate code, or API keys on any external servers.
+                      <br /><br />
+                      <span className="text-zinc-500">
+                        * We use your browser's <strong>Local Storage</strong> solely to save your history for your convenience. You can clear this at any time.
+                      </span>
                     </p>
                   </div>
                 </div>

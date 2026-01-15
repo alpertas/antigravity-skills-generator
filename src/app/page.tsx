@@ -1,11 +1,11 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PromptInput from "@/components/PromptInput";
 import SkillEditor from "@/components/SkillEditor";
 import PrivacyModal from "@/components/PrivacyModal";
-import { Github, Orbit } from "lucide-react";
+import HistorySidebar, { HistoryItem } from "@/components/HistorySidebar";
+import { Github, Orbit, Clock } from "lucide-react";
 
 const EXAMPLE_SKILL_MD = `---
 name: sample-skill
@@ -38,19 +38,63 @@ export default function Home() {
   const [output, setOutput] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
 
+  // History State
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Load History
+  useEffect(() => {
+    const saved = localStorage.getItem("skill_history");
+    if (saved) {
+      try {
+        setHistory(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse history", e);
+      }
+    }
+  }, []);
+
+  // Save History Helper
+  const saveHistory = (newHistory: HistoryItem[]) => {
+    setHistory(newHistory);
+    localStorage.setItem("skill_history", JSON.stringify(newHistory));
+  };
+
   const handleGenerate = async (additionalContext?: string) => {
     setIsLoading(true);
 
     // In a real app, we would use input + additionalContext here.
     if (additionalContext) {
       console.log("Generating with context:", additionalContext);
-      // We could append this to the input or send as a system prompt
     }
 
     // Simulate AI Latency
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    setOutput(EXAMPLE_SKILL_MD);
+
+    const newOutput = EXAMPLE_SKILL_MD;
+    setOutput(newOutput);
     setIsLoading(false);
+
+    // Save to History
+    const newItem: HistoryItem = {
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      prompt: input,
+      output: newOutput,
+      techStack: additionalContext ? "Custom Stack" : "Standard", // Simplified for now
+    };
+
+    const updatedHistory = [newItem, ...history].slice(0, 10);
+    saveHistory(updatedHistory);
+  };
+
+  const restoreHistory = (item: HistoryItem) => {
+    setInput(item.prompt);
+    setOutput(item.output);
+  };
+
+  const clearHistory = () => {
+    saveHistory([]);
   };
 
   return (
@@ -58,6 +102,14 @@ export default function Home() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setShowHistory(true)}
+            className="p-2 hover:bg-zinc-900 rounded-lg text-zinc-500 hover:text-purple-400 transition-colors"
+            title="History"
+          >
+            <Clock className="w-5 h-5" />
+          </button>
+
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
             <Orbit className="w-5 h-5 text-white" />
           </div>
@@ -75,7 +127,15 @@ export default function Home() {
       </header>
 
       {/* Main Split View */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        <HistorySidebar
+          isOpen={showHistory}
+          onClose={() => setShowHistory(false)}
+          historyItems={history}
+          onRestore={restoreHistory}
+          onClear={clearHistory}
+        />
+
         {/* Left Column: Input */}
         <section className="w-full md:w-1/2 border-r border-zinc-900 h-full overflow-y-auto">
           <PromptInput
@@ -98,7 +158,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-2 border-t border-zinc-900/50 bg-zinc-950 text-center z-10">
         <div className="flex flex-col md:flex-row items-center justify-center space-y-1 md:space-y-0 md:space-x-4 text-xs text-zinc-600">
-          <span>Antigravity Skill Architect is an unofficial community project. Not affiliated with Google.</span>
+          <span>No Server Storage. Data remains locally in your browser.</span>
           <button
             onClick={() => setShowPrivacy(true)}
             className="text-zinc-500 hover:text-zinc-300 underline underline-offset-2 transition-colors"
@@ -110,7 +170,7 @@ export default function Home() {
 
       <PrivacyModal
         isOpen={showPrivacy}
-        onClose={() => setShowPrivacy(false)}
+        onClose={() => setShowPrivacy(false)} 
       />
     </main>
   );
