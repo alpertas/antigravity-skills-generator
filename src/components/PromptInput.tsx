@@ -13,7 +13,7 @@ interface PromptInputProps {
   setSelectedTechs: (techs: string[]) => void;
 }
 
-const TONES = ["Standard", "Strict", "Educational"];
+
 
 const EXAMPLES = [
   "Create a Python script using BeautifulSoup to scrape product prices from an e-commerce site and save them to a CSV file.",
@@ -44,7 +44,6 @@ export default function PromptInput({
   selectedTechs,
   setSelectedTechs
 }: PromptInputProps) {
-  const [tone, setTone] = useState("Standard");
   const [activeTab, setActiveTab] = useState<"describe" | "reverse">("describe");
 
   const handleExample = () => {
@@ -170,16 +169,7 @@ Output: Create a \`SKILL.md\` file that teaches an AI agent how to reproduce thi
 
         <div className="flex justify-between items-center pt-2">
              <div className="flex items-center space-x-2">
-               <span className="text-xs text-zinc-500">Tone:</span>
-               <select 
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 rounded-md px-2 py-1 outline-none focus:border-purple-500"
-               >
-                 {TONES.map(t => (
-                   <option key={t} value={t}>{t}</option>
-                 ))}
-               </select>
+            {/* Tone selector removed */}
              </div>
              <div className="text-xs text-zinc-600">
                {input.length} chars
