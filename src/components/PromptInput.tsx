@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Shuffle } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface PromptInputProps {
@@ -14,21 +14,47 @@ interface PromptInputProps {
 
 const TONES = ["Standard", "Strict", "Educational"];
 
+const EXAMPLES = [
+  "Create a Python script using BeautifulSoup to scrape product prices from an e-commerce site and save them to a CSV file.",
+  "Build a React Native music player with Expo AV, including play/pause/skip controls and a progress bar.",
+  "Develop a Next.js SaaS boilerplate with Supabase Auth, Stripe subscription integration, and a dashboard layout.",
+  "Write a Node.js Express API with TypeScript that handles file uploads to AWS S3 and stores metadata in PostgreSQL."
+];
+
 export default function PromptInput({ input, setInput, isGenerating, handleGenerate }: PromptInputProps) {
   const [tone, setTone] = useState("Standard");
 
+  const handleExample = () => {
+    const randomExample = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    setInput(randomExample);
+  };
+
   return (
     <div className="flex flex-col h-full p-6 space-y-6">
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
-          Task Requirement
-        </label>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Describe the coding task step-by-step..."
-          className="w-full h-64 p-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none resize-none transition-all placeholder:text-zinc-600 text-sm font-mono leading-relaxed"
-        />
+      <div className="space-y-2 relative">
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
+            Task Requirement
+          </label>
+        </div>
+
+        <div className="relative">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Describe your coding task... (e.g., 'Create a Supabase auth hook with RLS policies')"
+            className="w-full h-64 p-4 pr-24 bg-zinc-900 border border-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none resize-none transition-all placeholder:text-zinc-600 text-sm font-mono leading-relaxed"
+          />
+
+          <button
+            onClick={handleExample}
+            className="absolute top-3 right-3 flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition-colors border border-zinc-700/50"
+          >
+            <Shuffle className="w-3 h-3" />
+            <span>Example</span>
+          </button>
+        </div>
+
         <div className="flex justify-between items-center pt-2">
              <div className="flex items-center space-x-2">
                <span className="text-xs text-zinc-500">Tone:</span>
