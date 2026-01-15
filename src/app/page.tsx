@@ -5,7 +5,8 @@ import PromptInput from "@/components/PromptInput";
 import SkillEditor from "@/components/SkillEditor";
 import PrivacyModal from "@/components/PrivacyModal";
 import HistorySidebar, { HistoryItem } from "@/components/HistorySidebar";
-import { Github, Clock } from "lucide-react";
+import { Github, Clock, Share2, Check } from "lucide-react";
+import lzString from "lz-string";
 
 const EXAMPLE_SKILL_MD = `---
 name: sample-skill
@@ -34,13 +35,33 @@ npm run dev
 
 export default function Home() {
   const [input, setInput] = useState("");
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // History State
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  // Hydrate from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get("s");
+    if (shared) {
+      try {
+        const decompressed = lzString.decompressFromEncodedURIComponent(shared);
+        if (decompressed) {
+          const { p, t } = JSON.parse(decompressed);
+          if (p) setInput(p);
+          if (t) setSelectedTechs(t);
+        }
+      } catch (e) {
+        console.error("Failed to parse shared state", e);
+      }
+    }
+  }, []);
 
   // Load History
   useEffect(() => {
@@ -88,13 +109,36 @@ export default function Home() {
     saveHistory(updatedHistory);
   };
 
-  const restoreHistory = (item: HistoryItem) => {
+  const restoreHistory = (item: HistoryItem | any) => {
     setInput(item.prompt);
-    setOutput(item.output);
+    // For featured skills, we don't have output, so we maybe clear it or generate it? 
+    // The requirement says "load prompt and techStack".
+    if ('output' in item) {
+      setOutput(item.output);
+      // Try to set tech stack if it matches format, or ignore if simple string
+    } else {
+      // It's a featured skill
+      if (item.techStack && Array.isArray(item.techStack)) {
+        setSelectedTechs(item.techStack);
+      }
+      // Determine if we should clear output or keep it. Let's clear it to avoid confusion.
+      setOutput("");
+    }
   };
 
   const clearHistory = () => {
     saveHistory([]);
+  };
+
+  const handleShare = () => {
+    const state = { p: input, t: selectedTechs };
+    const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(state));
+    const url = `${window.location.origin}${window.location.pathname}?s=${compressed}`;
+
+    window.history.pushState({}, "", url);
+    navigator.clipboard.writeText(url);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   return (
@@ -139,15 +183,26 @@ export default function Home() {
             </span>
           </span>
         </div>
-        <a
-          href="https://github.com/alpertas/antigravity-skills-generator"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-zinc-500 hover:text-zinc-300 transition-colors flex items-center space-x-2 text-sm"
-        >
-          <Github className="w-4 h-4" />
-          <span>GitHub / Contribute</span>
-        </a>
+
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleShare}
+            className="text-zinc-500 hover:text-purple-400 transition-colors flex items-center space-x-2 text-sm"
+            title="Share Configuration"
+          >
+            {isCopied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+            <span className={isCopied ? "text-green-400" : ""}>{isCopied ? "Link Copied!" : "Share"}</span>
+          </button>
+          <a
+            href="https://github.com/alpertas/antigravity-skills-generator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-zinc-500 hover:text-zinc-300 transition-colors flex items-center space-x-2 text-sm"
+          >
+            <Github className="w-4 h-4" />
+            <span>GitHub</span>
+          </a>
+        </div>
       </header>
 
       {/* Main Split View */}
@@ -167,6 +222,8 @@ export default function Home() {
             setInput={setInput}
             isGenerating={isLoading}
             handleGenerate={handleGenerate}
+            selectedTechs={selectedTechs}
+            setSelectedTechs={setSelectedTechs}
           />
         </section>
 

@@ -28,9 +28,18 @@ const TECH_STACKS = [
   { id: "react-query", label: "TanStack Query", context: "Implement strict caching policies and optimistic updates." },
 ];
 
-export default function PromptInput({ input, setInput, isGenerating, handleGenerate }: PromptInputProps) {
+export default function PromptInput({
+  input,
+  setInput,
+  isGenerating,
+  handleGenerate,
+  selectedTechs,
+  setSelectedTechs
+}: PromptInputProps & {
+  selectedTechs: string[];
+  setSelectedTechs: (techs: string[]) => void;
+}) {
   const [tone, setTone] = useState("Standard");
-  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
 
   const handleExample = () => {
     const randomExample = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
@@ -38,8 +47,10 @@ export default function PromptInput({ input, setInput, isGenerating, handleGener
   };
 
   const toggleTech = (id: string) => {
-    setSelectedTechs(prev => 
-      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    setSelectedTechs(
+      selectedTechs.includes(id)
+        ? selectedTechs.filter(t => t !== id)
+        : [...selectedTechs, id]
     );
   };
 

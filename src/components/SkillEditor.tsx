@@ -1,42 +1,77 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Download, Check, Code2, FileText, Lock } from "lucide-react";
+import { Copy, Download, Check, AlertTriangle, ShieldCheck, Lock, HelpCircle, Code2, FileText } from "lucide-react";
 import SupportModal from "./SupportModal";
+import InstallGuideModal from "./InstallGuideModal";
+import ReactMarkdown from "react-markdown";
 
 interface SkillEditorProps {
   markdown: string;
   isVisible: boolean;
 }
 
+const validateSkill = (md: string) => {
+    if (!md) return { valid: true, missing: [] };
+    const missing = [];
+
+    if (!/^---\n[\s\S]*?name:[\s\S]*?---/.test(md)) missing.push("Frontmatter");
+    if (!md.includes("# 🎯 Goal")) missing.push("Goal Section");
+    // Allow flexible context/instruction headers
+    if (!md.match(/# (🧠 Context|📋 Instructions)/)) missing.push("Context/Instructions");
+
+    return { valid: missing.length === 0, missing };
+};
+
 export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
   const [copied, setCopied] = useState(false);
-    const [displayedText, setDisplayedText] = useState("");
+    const [displayContent, setDisplayContent] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
     const [showSupportModal, setShowSupportModal] = useState(false);
+    const [showInstallGuide, setShowInstallGuide] = useState(false);
+    const [validation, setValidation] = useState<{ valid: boolean; missing: string[] }>({ valid: true, missing: [] });
     const autoScrollRef = useRef<HTMLDivElement>(null);
 
     // Typewriter effect logic
     useEffect(() => {
         if (!isVisible) {
-            setDisplayedText("");
+            setDisplayContent("");
+            setIsTyping(false);
             return;
         }
 
+        if (markdown) {
+            // Validate immediately
+            setValidation(validateSkill(markdown));
+
+            // If content changed significantly, restart typing
+            if (markdown !== displayContent && !isTyping) {
+                // For simplicity, if we are already seeing some content, we might just want to show the new one.
+                // But let's stick to the typewriter for now or just set it if it's an update.
+                // Actually, the previous logic was:
+                // setDisplayContent("") -> start interval.
+            }
+        }
+
         let currentIndex = 0;
+        // Simple typewriter reset for new generation
+        if (markdown && isVisible) {
+            setIsTyping(true);
         const interval = setInterval(() => {
             if (currentIndex < markdown.length) {
-                setDisplayedText(markdown.slice(0, currentIndex + 1));
-                currentIndex++;
-                // Auto-scroll to bottom
-                if (autoScrollRef.current) {
-                    autoScrollRef.current.scrollTop = autoScrollRef.current.scrollHeight;
-                }
+                setDisplayContent(markdown.slice(0, currentIndex + 1));
+                currentIndex += 5; // Speed up
             } else {
+                setDisplayContent(markdown); // Ensure full content
+                setIsTyping(false);
                 clearInterval(interval);
             }
-        }, 5); // 5ms per character for fast typing
-
+            if (autoScrollRef.current) {
+                autoScrollRef.current.scrollTop = autoScrollRef.current.scrollHeight;
+            }
+        }, 5);
         return () => clearInterval(interval);
+        }
     }, [markdown, isVisible]);
 
   const handleCopy = () => {
@@ -110,6 +145,21 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                             <span className="text-xs font-mono">SKILL.md</span>
                         </div>
                         <div className="flex items-center space-x-2">
+                              {/* Validation Status */}
+                              {!isTyping && (
+                                  validation.valid ? (
+                                      <div className="flex items-center space-x-1 px-2 py-1 rounded bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-medium animate-in fade-in">
+                                          <ShieldCheck className="w-3 h-3" />
+                                          <span>Valid Format</span>
+                                      </div>
+                                  ) : (
+                                      <div className="flex items-center space-x-1 px-2 py-1 rounded bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-medium animate-in fade-in" title={`Missing: ${validation.missing.join(", ")}`}>
+                                          <AlertTriangle className="w-3 h-3" />
+                                          <span>Invalid Format</span>
+                                      </div>
+                                  )
+                              )}
+
                              <button 
                                 onClick={handleCopy}
                                   className="flex items-center space-x-2 px-3 py-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-white transition-colors text-xs font-medium"
@@ -135,8 +185,8 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                           className="flex-1 overflow-auto p-6 font-mono text-sm leading-relaxed custom-scrollbar"
                       >
                         <pre className="whitespace-pre-wrap text-zinc-300">
-                              {displayedText}
-                              {displayedText.length < markdown.length && (
+                              {displayContent}
+                              {displayContent.length < markdown.length && (
                                   <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse align-middle" />
                               )}
                         </pre>
