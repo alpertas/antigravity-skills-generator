@@ -1,0 +1,97 @@
+import { GoogleGenAI } from "@google/genai";
+import { NextResponse } from "next/server";
+
+// 1. MOD: MİMAR (Describe)
+const ARCHITECT_PROMPT = `
+### ROLE & OBJECTIVE
+You are the **Antigravity Skill Architect**. Your goal is to convert user requirements into precise, production-ready \`SKILL.md\` files.
+
+### OUTPUT FORMAT (Strict Markdown)
+---
+name: kebab-case-name
+version: 1.0.0
+description: Short summary
+---
+
+# 🎯 Goal
+...
+
+# 📋 Instructions
+...
+
+# 📦 Dependencies
+...
+`;
+
+// 2. MOD: ANALİST (Reverse Engineering)
+const ANALYST_PROMPT = `
+### ROLE & OBJECTIVE
+You are an **Expert Code Analyst** for Google Antigravity.
+Your task: Analyze the provided code snippet deeply. Extract its coding conventions, naming patterns, library choices, and architectural style.
+
+### OUTPUT GOAL
+Create a \`SKILL.md\` file that teaches an AI agent how to reproduce this exact style.
+- In 'Instructions', explicitly list the patterns found in the code.
+- In 'Goal', write: 'Replicate the coding style and structure observed in the reference code.'
+- Strictly follow the standard SKILL.md format.
+`;
+
+export async function POST(req: Request) {
+    try {
+        const body = await req.json();
+        const { prompt, mode } = body;
+
+        if (!prompt) {
+            return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+        }
+
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return NextResponse.json({ error: "API Key not configured" }, { status: 500 });
+        }
+
+        const selectedSystemInstruction = mode === 'reverse' ? ANALYST_PROMPT : ARCHITECT_PROMPT;
+
+        // YENİ SDK BAŞLATMA
+        const ai = new GoogleGenAI({ apiKey });
+
+        // --- DEĞİŞİKLİK BURADA ---
+        // 2.0 yerine 1.5-flash kullanıyoruz çünkü kotası daha geniş ve kararlı.
+        // Yeni SDK ile eski model ismini kullanabiliriz.
+        const result = await ai.models.generateContent({
+            model: 'gemini-2.0-flash',
+            contents: [
+                {
+                    role: 'user',
+                    parts: [{ text: prompt }]
+                }
+            ],
+            config: {
+                systemInstruction: {
+                    parts: [{ text: selectedSystemInstruction }]
+                }
+            }
+        });
+
+        // Cevabı alıyoruz
+        const text = result.text || "No content";
+
+        return NextResponse.json({ output: text });
+
+    } catch (error: any) {
+        console.error("Gemini API Error:", error);
+
+        // Hata 429 (Kota Doldu) ise kullanıcıya özel mesaj dön
+        if (error.message?.includes("429") || error.status === 429) {
+            return NextResponse.json(
+                { error: "Google API Quota Exceeded. Please wait a minute and try again." },
+                { status: 429 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: error.message || "Failed to generate skill" },
+            { status: 500 }
+        );
+    }
+}
