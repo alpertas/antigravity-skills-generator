@@ -1,0 +1,89 @@
+
+"use client";
+
+import { useState } from "react";
+import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+interface PromptInputProps {
+  input: string;
+  setInput: (value: string) => void;
+  isGenerating: boolean;
+  handleGenerate: () => void;
+}
+
+const TONES = ["Standard", "Strict", "Educational"];
+
+export default function PromptInput({ input, setInput, isGenerating, handleGenerate }: PromptInputProps) {
+  const [tone, setTone] = useState("Standard");
+
+  return (
+    <div className="flex flex-col h-full p-6 space-y-6">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
+          Task Requirement
+        </label>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Describe the coding task step-by-step..."
+          className="w-full h-64 p-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none resize-none transition-all placeholder:text-zinc-600 text-sm font-mono leading-relaxed"
+        />
+        <div className="flex justify-between items-center pt-2">
+             <div className="flex items-center space-x-2">
+               <span className="text-xs text-zinc-500">Tone:</span>
+               <select 
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+                className="bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 rounded-md px-2 py-1 outline-none focus:border-purple-500"
+               >
+                 {TONES.map(t => (
+                   <option key={t} value={t}>{t}</option>
+                 ))}
+               </select>
+             </div>
+             <div className="text-xs text-zinc-600">
+               {input.length} chars
+             </div>
+        </div>
+      </div>
+
+      <div className="pt-4">
+        <button
+          onClick={handleGenerate}
+          disabled={!input || isGenerating}
+          className="w-full group relative flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-purple-900/20"
+        >
+          {isGenerating ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5 group-hover:text-yellow-200 transition-colors" />
+              <span>Generate Skill File</span>
+              <ArrowRight className="w-4 h-4 opacity-50 group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
+        </button>
+      </div>
+      
+      {/* Tips Section */}
+      <div className="mt-auto pt-8 border-t border-zinc-800/50">
+        <h4 className="text-xs font-semibold text-zinc-500 mb-3">TIPS FOR BEST RESULTS</h4>
+        <ul className="space-y-2 text-xs text-zinc-400">
+          <li className="flex items-center space-x-2">
+            <span className="w-1 h-1 bg-purple-500 rounded-full" />
+            <span>Be specific about library versions (e.g. Next.js 14)</span>
+          </li>
+          <li className="flex items-center space-x-2">
+            <span className="w-1 h-1 bg-blue-500 rounded-full" />
+            <span>Mention state management preference</span>
+          </li>
+          <li className="flex items-center space-x-2">
+            <span className="w-1 h-1 bg-green-500 rounded-full" />
+            <span>Paste existing file snippets if relevant</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
