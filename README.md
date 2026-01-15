@@ -32,7 +32,7 @@ This project is built with **Next.js 14** and uses the **Google Gemini API** dir
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/alpertas/antigravity-skills-generator.git](https://github.com/alpertas/antigravity-skills-generator.git)
+    git clone https://github.com/alpertas/antigravity-skills-generator.git
     cd antigravity-skills-generator
     ```
 
