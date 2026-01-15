@@ -3,12 +3,12 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Download, Check, AlertTriangle, ShieldCheck, Lock, HelpCircle, Code2, FileText } from "lucide-react";
 import SupportModal from "./SupportModal";
-import InstallGuideModal from "./InstallGuideModal";
 import ReactMarkdown from "react-markdown";
 
 interface SkillEditorProps {
   markdown: string;
   isVisible: boolean;
+    onInstallGuideClick: () => void;
 }
 
 const validateSkill = (md: string) => {
@@ -23,12 +23,11 @@ const validateSkill = (md: string) => {
     return { valid: missing.length === 0, missing };
 };
 
-export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
+export default function SkillEditor({ markdown, isVisible, onInstallGuideClick }: SkillEditorProps) {
   const [copied, setCopied] = useState(false);
     const [displayContent, setDisplayContent] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [showSupportModal, setShowSupportModal] = useState(false);
-    const [showInstallGuide, setShowInstallGuide] = useState(false);
     const [validation, setValidation] = useState<{ valid: boolean; missing: string[] }>({ valid: true, missing: [] });
     const autoScrollRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +167,16 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
                                 {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
                                   <span>{copied ? "Copied!" : "Copy Markdown"}</span>
                              </button>
+
+                              <div className="h-4 w-px bg-zinc-800 mx-1" />
+
+                              <button
+                                  onClick={onInstallGuideClick}
+                                  className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-500 hover:text-zinc-300 transition-colors"
+                                  title="How to Install"
+                              >
+                                  <HelpCircle className="w-4 h-4" />
+                              </button>
                              <button 
                                   onClick={handleDownloadClick}
                                   className="flex items-center space-x-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md text-xs font-medium transition-colors border border-zinc-700/50"
@@ -202,3 +211,4 @@ export default function SkillEditor({ markdown, isVisible }: SkillEditorProps) {
     </div>
   );
 }
+

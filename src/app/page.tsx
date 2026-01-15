@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import PromptInput from "@/components/PromptInput";
 import SkillEditor from "@/components/SkillEditor";
 import PrivacyModal from "@/components/PrivacyModal";
+import InstallGuideModal from "@/components/InstallGuideModal";
 import HistorySidebar, { HistoryItem } from "@/components/HistorySidebar";
 import { Github, Clock, Share2, Check } from "lucide-react";
 import lzString from "lz-string";
@@ -39,6 +40,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   // History State
@@ -53,9 +55,10 @@ export default function Home() {
       try {
         const decompressed = lzString.decompressFromEncodedURIComponent(shared);
         if (decompressed) {
-          const { p, t } = JSON.parse(decompressed);
-          if (p) setInput(p);
-          if (t) setSelectedTechs(t);
+          const { o } = JSON.parse(decompressed);
+          if (o) {
+            setOutput(o);
+          }
         }
       } catch (e) {
         console.error("Failed to parse shared state", e);
@@ -84,7 +87,6 @@ export default function Home() {
   const handleGenerate = async (additionalContext?: string) => {
     setIsLoading(true);
 
-    // In a real app, we would use input + additionalContext here.
     if (additionalContext) {
       console.log("Generating with context:", additionalContext);
     }
@@ -102,7 +104,7 @@ export default function Home() {
       timestamp: Date.now(),
       prompt: input,
       output: newOutput,
-      techStack: additionalContext ? "Custom Stack" : "Standard", // Simplified for now
+      techStack: additionalContext ? "Custom Stack" : "Standard",
     };
 
     const updatedHistory = [newItem, ...history].slice(0, 10);
@@ -111,17 +113,12 @@ export default function Home() {
 
   const restoreHistory = (item: HistoryItem | any) => {
     setInput(item.prompt);
-    // For featured skills, we don't have output, so we maybe clear it or generate it? 
-    // The requirement says "load prompt and techStack".
     if ('output' in item) {
       setOutput(item.output);
-      // Try to set tech stack if it matches format, or ignore if simple string
     } else {
-      // It's a featured skill
       if (item.techStack && Array.isArray(item.techStack)) {
         setSelectedTechs(item.techStack);
       }
-      // Determine if we should clear output or keep it. Let's clear it to avoid confusion.
       setOutput("");
     }
   };
@@ -131,7 +128,11 @@ export default function Home() {
   };
 
   const handleShare = () => {
-    const state = { p: input, t: selectedTechs };
+    if (!output) {
+      alert("Please generate a skill first to share it.");
+      return;
+    }
+    const state = { o: output };
     const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(state));
     const url = `${window.location.origin}${window.location.pathname}?s=${compressed}`;
 
@@ -175,13 +176,13 @@ export default function Home() {
               </defs>
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
             </svg>
-          </div>
-          <span className="font-semibold text-zinc-100 tracking-tight text-lg flex items-center gap-2">
-            Antigravity <span className="text-zinc-500 font-normal">Skill Architect</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full border border-yellow-500/50 text-yellow-500 bg-yellow-500/10 font-medium tracking-wide">
-              v0.1 Beta
+            <span className="font-semibold text-zinc-100 tracking-tight text-lg flex items-center gap-2">
+              Antigravity <span className="text-zinc-500 font-normal">Skill Architect</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full border border-yellow-500/50 text-yellow-500 bg-yellow-500/10 font-medium tracking-wide">
+                v0.1 Beta
+              </span>
             </span>
-          </span>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -232,6 +233,7 @@ export default function Home() {
           <SkillEditor
             markdown={output}
             isVisible={!!output}
+            onInstallGuideClick={() => setShowInstallGuide(true)}
           />
         </section>
       </div>
@@ -252,6 +254,11 @@ export default function Home() {
       <PrivacyModal
         isOpen={showPrivacy}
         onClose={() => setShowPrivacy(false)} 
+      />
+
+      <InstallGuideModal
+        isOpen={showInstallGuide}
+        onClose={() => setShowInstallGuide(false)}
       />
 
       {/* Open Source Toast */}

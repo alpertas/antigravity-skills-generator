@@ -1,6 +1,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Copy, Check, Terminal } from "lucide-react";
+import { X, Copy, Check, Terminal, FolderTree } from "lucide-react";
 import { useState } from "react";
 
 interface InstallGuideModalProps {
@@ -9,20 +9,16 @@ interface InstallGuideModalProps {
 }
 
 export default function InstallGuideModal({ isOpen, onClose }: InstallGuideModalProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiedStep1, setCopiedStep1] = useState(false);
+  const [copiedStep2, setCopiedStep2] = useState(false);
 
-  const INSTALL_CMD = `
-# 1. Create the skills directory
-mkdir -p .antigravity/skills
+  const CMD_STEP_1 = "mkdir -p .agent/skills/my-skill";
+  const CMD_STEP_2 = "mv ~/Downloads/SKILL.md .agent/skills/my-skill/SKILL.md";
 
-# 2. Move the downloaded file
-mv ~/Downloads/SKILL.md .antigravity/skills/
-`.trim();
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(INSTALL_CMD);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (text: string, setStepCopied: (val: boolean) => void) => {
+    navigator.clipboard.writeText(text);
+    setStepCopied(true);
+    setTimeout(() => setStepCopied(false), 2000);
   };
 
   return (
@@ -53,31 +49,56 @@ mv ~/Downloads/SKILL.md .antigravity/skills/
                  </button>
               </div>
 
-              <div className="p-6 space-y-4">
-                 <p className="text-sm text-zinc-400">
-                    To use this skill with the Antigravity IDE, place the downloaded file in your project's skills directory.
-                 </p>
-
-                 <div className="relative group">
-                    <div className="absolute top-3 right-3">
-                        <button
-                            onClick={handleCopy}
-                            className="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-md transition-colors"
-                            title="Copy Commands"
-                        >
-                            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                    </div>
-                    <pre className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-300 overflow-x-auto">
-                        <code className="language-bash">{INSTALL_CMD}</code>
-                    </pre>
-                 </div>
-
-                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                    <p className="text-xs text-blue-400">
-                        <strong>Tip:</strong> You can rename the file to something more descriptive, like <code>auth-flow.skill</code>.
+              <div className="p-6 space-y-6">
+                <div className="bg-blue-500/5 border border-blue-500/10 rounded-lg p-4 flex items-start gap-3">
+                  <FolderTree className="w-5 h-5 text-blue-400 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-sm text-blue-200 font-medium">Standard Skill Structure</p>
+                    <p className="text-xs text-blue-400/80 leading-relaxed">
+                      Skills live in <code className="bg-blue-500/10 px-1 rounded">.agent/skills/</code>. Each skill needs its own folder containing a <code className="bg-blue-500/10 px-1 rounded">SKILL.md</code> file.
                     </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-zinc-400">
+                      <span>1. Create skill folder</span>
+                    </div>
+                    <div className="relative group">
+                      <button
+                        onClick={() => handleCopy(CMD_STEP_1, setCopiedStep1)}
+                        className="absolute top-2 right-2 p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-md transition-colors"
+                      >
+                        {copiedStep1 ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                      <pre className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-300 overflow-x-auto">
+                        <code className="language-bash">{CMD_STEP_1}</code>
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-zinc-400">
+                      <span>2. Move and rename the file</span>
+                    </div>
+                    <div className="relative group">
+                      <button
+                        onClick={() => handleCopy(CMD_STEP_2, setCopiedStep2)}
+                        className="absolute top-2 right-2 p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded-md transition-colors"
+                      >
+                        {copiedStep2 ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                      <pre className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-300 overflow-x-auto">
+                        <code className="language-bash">{CMD_STEP_2}</code>
+                      </pre>
+                    </div>
+                  </div>
                  </div>
+
+                <p className="text-[10px] text-zinc-500 text-center">
+                  For global availability, use <code className="text-zinc-400">~/.gemini/antigravity/skills/</code> instead.
+                </p>
               </div>
 
               <div className="p-4 border-t border-zinc-900 bg-zinc-900/50 flex justify-end">
@@ -85,7 +106,7 @@ mv ~/Downloads/SKILL.md .antigravity/skills/
                     onClick={onClose}
                     className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 rounded-lg text-sm font-medium transition-colors"
                 >
-                    Got it
+                  Done
                 </button>
               </div>
             </motion.div>
