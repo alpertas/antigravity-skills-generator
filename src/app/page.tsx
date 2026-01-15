@@ -113,8 +113,11 @@ export default function Home() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
             <Orbit className="w-5 h-5 text-white" />
           </div>
-          <span className="font-semibold text-zinc-100 tracking-tight text-lg">
+          <span className="font-semibold text-zinc-100 tracking-tight text-lg flex items-center gap-2">
             Antigravity <span className="text-zinc-500 font-normal">Skill Architect</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full border border-yellow-500/50 text-yellow-500 bg-yellow-500/10 font-medium tracking-wide">
+              v0.1 Beta
+            </span>
           </span>
         </div>
         <a
@@ -177,8 +180,8 @@ export default function Home() {
 
       {/* Open Source Toast */}
       <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 fade-in duration-500">
-        <a
-          href="https://github.com/alpertas/antigravity-skills-generator"
+        <a 
+          href="https://github.com/alpertas/antigravity-skills-generator/issues"
           target="_blank"
           rel="noreferrer"
           className="flex items-center space-x-3 bg-zinc-900 border border-zinc-800 p-3 rounded-lg shadow-2xl hover:bg-zinc-800 transition-colors group"
@@ -187,8 +190,8 @@ export default function Home() {
             <Github className="w-4 h-4 text-white" />
           </div>
           <div className="pr-2">
-            <p className="text-xs font-semibold text-zinc-200">Projects is Open Source!</p>
-            <p className="text-[10px] text-zinc-500">PRs are welcome 🚀</p>
+            <p className="text-xs font-semibold text-zinc-200">🚧 Work in Progress</p>
+            <p className="text-[10px] text-zinc-500">Found a bug? Open an Issue 🚀</p>
           </div>
         </a>
       </div>

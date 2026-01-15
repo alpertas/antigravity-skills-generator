@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, ArrowRight, Loader2, Shuffle, Layers } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Shuffle, Layers, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface PromptInputProps {
@@ -119,7 +119,12 @@ export default function PromptInput({ input, setInput, isGenerating, handleGener
         </div>
       </div>
 
-      <div className="pt-4">
+      <div className="pt-4 space-y-3">
+        <div className="flex items-center gap-2 text-zinc-500 text-xs px-1">
+          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 text-yellow-500/50" />
+          <span>Experimental build. Skills may require manual review.</span>
+        </div>
+
         <button
           onClick={onGenerateClick}
           disabled={!input || isGenerating}
