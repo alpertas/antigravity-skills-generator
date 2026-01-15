@@ -82,14 +82,24 @@ This tool requires your own API key to function (BYOK - Bring Your Own Key).
 
 ---
 
+## 🧠 Under the Hood (System Prompt)
+
+Curious about how the AI thinks? We believe in full transparency.
+
+You can view the exact **System Prompt** used to power this tool. Feel free to use it to create your own custom agents in Google AI Studio or other LLMs.
+
+👉 **[View the System Prompt (SYSTEM_PROMPT.md)](./SYSTEM_PROMPT.md)**
+
+---
+
 ## 🧠 For AI Studio Users (Manual Setup)
 
 If you prefer to build this agent yourself inside Google AI Studio instead of using this web UI:
 
 1.  Create a new **Chat Prompt**.
-2.  Set the **System Instructions** to:
-    > You are the Antigravity Skill Architect. Your sole purpose is to convert user requests into robust, secure, and production-ready SKILL.md files following the official format. You must output only the raw Markdown content.
-3.  Use **Gemini 1.5 Flash** (Recommended for speed) or **Pro**.
+2.  Copy the content from [SYSTEM_PROMPT.md](./SYSTEM_PROMPT.md).
+3.  Paste it into the **System Instructions** block.
+4.  Use **Gemini 1.5 Flash** (Recommended for speed) or **Pro**.
 
 ---
 
