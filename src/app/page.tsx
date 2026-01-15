@@ -38,8 +38,15 @@ export default function Home() {
   const [output, setOutput] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (additionalContext?: string) => {
     setIsLoading(true);
+
+    // In a real app, we would use input + additionalContext here.
+    if (additionalContext) {
+      console.log("Generating with context:", additionalContext);
+      // We could append this to the input or send as a system prompt
+    }
+
     // Simulate AI Latency
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setOutput(EXAMPLE_SKILL_MD);

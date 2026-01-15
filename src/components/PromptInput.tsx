@@ -1,15 +1,14 @@
-
 "use client";
 
 import { useState } from "react";
-import { Sparkles, ArrowRight, Loader2, Shuffle } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Shuffle, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface PromptInputProps {
   input: string;
   setInput: (value: string) => void;
   isGenerating: boolean;
-  handleGenerate: () => void;
+  handleGenerate: (additionalContext: string) => void;
 }
 
 const TONES = ["Standard", "Strict", "Educational"];
@@ -21,38 +20,84 @@ const EXAMPLES = [
   "Write a Node.js Express API with TypeScript that handles file uploads to AWS S3 and stores metadata in PostgreSQL."
 ];
 
+const TECH_STACKS = [
+  { id: "nextjs", label: "Next.js", context: "Use App Router, Server Components, and TypeScript strict mode." },
+  { id: "tailwind", label: "Tailwind CSS", context: "Use generic utility classes, avoid arbitrary values." },
+  { id: "supabase", label: "Supabase", context: "Implement Row Level Security (RLS) and generated database types." },
+  { id: "shadcn", label: "shadcn/ui", context: "Use Radix UI primitives and lucide-react icons." },
+  { id: "react-query", label: "TanStack Query", context: "Implement strict caching policies and optimistic updates." },
+];
+
 export default function PromptInput({ input, setInput, isGenerating, handleGenerate }: PromptInputProps) {
   const [tone, setTone] = useState("Standard");
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
 
   const handleExample = () => {
     const randomExample = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setInput(randomExample);
   };
 
+  const toggleTech = (id: string) => {
+    setSelectedTechs(prev => 
+      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    );
+  };
+
+  const onGenerateClick = () => {
+    const context = selectedTechs
+      .map(id => TECH_STACKS.find(t => t.id === id)?.context)
+      .filter(Boolean)
+      .join("\n");
+      
+    const finalContext = context ? `\n\n### TECHNICAL CONTEXT:\n${context}` : "";
+    handleGenerate(finalContext);
+  };
+
   return (
     <div className="flex flex-col h-full p-6 space-y-6">
-      <div className="space-y-2 relative">
+      <div className="space-y-4 relative">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
-            Task Requirement
-          </label>
+            <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider flex items-center space-x-2">
+               <Layers className="w-4 h-4" />
+               <span>Task Requirement</span>
+            </label>
         </div>
-
+        
         <div className="relative">
-          <textarea
+            <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Describe your coding task... (e.g., 'Create a Supabase auth hook with RLS policies')"
             className="w-full h-64 p-4 pr-24 bg-zinc-900 border border-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 outline-none resize-none transition-all placeholder:text-zinc-600 text-sm font-mono leading-relaxed"
-          />
+            />
+            
+            <button
+                onClick={handleExample}
+                className="absolute top-3 right-3 flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition-colors border border-zinc-700/50"
+            >
+                <Shuffle className="w-3 h-3" />
+                <span>Example</span>
+            </button>
+        </div>
 
-          <button
-            onClick={handleExample}
-            className="absolute top-3 right-3 flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition-colors border border-zinc-700/50"
-          >
-            <Shuffle className="w-3 h-3" />
-            <span>Example</span>
-          </button>
+        {/* Tech Stack Chips */}
+        <div className="flex flex-wrap gap-2">
+            {TECH_STACKS.map(tech => {
+                const isSelected = selectedTechs.includes(tech.id);
+                return (
+                    <button
+                        key={tech.id}
+                        onClick={() => toggleTech(tech.id)}
+                        className={`text-xs px-3 py-1 rounded-full border transition-all duration-200 font-medium ${
+                            isSelected 
+                            ? "border-purple-500 bg-purple-500/10 text-purple-200 shadow-sm shadow-purple-500/20" 
+                            : "border-zinc-800 bg-zinc-900 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                        }`}
+                    >
+                        {tech.label}
+                    </button>
+                );
+            })}
         </div>
 
         <div className="flex justify-between items-center pt-2">
@@ -76,7 +121,7 @@ export default function PromptInput({ input, setInput, isGenerating, handleGener
 
       <div className="pt-4">
         <button
-          onClick={handleGenerate}
+          onClick={onGenerateClick}
           disabled={!input || isGenerating}
           className="w-full group relative flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-purple-900/20"
         >
