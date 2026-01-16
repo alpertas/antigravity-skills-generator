@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
-// 1. MOD: MİMAR (Describe)
+// Mode 1: Architect
 const ARCHITECT_PROMPT = `
 ### ROLE & OBJECTIVE
 You are the **Antigravity Skill Architect**. Your goal is to convert user requirements into precise, production-ready \`SKILL.md\` files.
@@ -23,7 +23,7 @@ description: Short summary
 ...
 `;
 
-// 2. MOD: ANALİST (Reverse Engineering)
+// Mode 2: Analyst
 const ANALYST_PROMPT = `
 ### ROLE & OBJECTIVE
 You are an **Expert Code Analyst** for Google Antigravity.
@@ -56,12 +56,10 @@ export async function POST(req: Request) {
 
         const selectedSystemInstruction = mode === 'reverse' ? ANALYST_PROMPT : ARCHITECT_PROMPT;
 
-        // YENİ SDK BAŞLATMA
+        // Initialize SDK
         const ai = new GoogleGenAI({ apiKey });
 
-        // --- DEĞİŞİKLİK BURADA ---
-        // 2.0 yerine 1.5-flash kullanıyoruz çünkü kotası daha geniş ve kararlı.
-        // Yeni SDK ile eski model ismini kullanabiliriz.
+        // Using gemini-2.0-flash for better stability and quota
         const result = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
             contents: [
@@ -77,7 +75,7 @@ export async function POST(req: Request) {
             }
         });
 
-        // Cevabı alıyoruz
+        // Get response
         const text = result.text || "No content";
 
         return NextResponse.json({ output: text });
@@ -85,7 +83,7 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error("Gemini API Error:", error);
 
-        // Hata 429 (Kota Doldu) ise kullanıcıya özel mesaj dön
+        // Handle Rate Limiting (429)
         if (error.message?.includes("429") || error.status === 429) {
             return NextResponse.json(
                 { error: "Google API Quota Exceeded. Please wait a minute and try again." },

@@ -6,7 +6,7 @@ import SkillEditor from "@/components/SkillEditor";
 import PrivacyModal from "@/components/PrivacyModal";
 import InstallGuideModal from "@/components/InstallGuideModal";
 import HistorySidebar, { HistoryItem } from "@/components/HistorySidebar";
-import { Github, Clock, Share2, Check, AlertTriangle } from "lucide-react"; // AlertTriangle ekledim hata gösterimi için
+import { Github, Clock, Share2, Check, AlertTriangle } from "lucide-react";
 import lzString from "lz-string";
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  // Hata yönetimi için state ekleyelim
+  // Error handling state
   const [error, setError] = useState<string | null>(null);
 
   // History State
@@ -62,22 +62,21 @@ export default function Home() {
     localStorage.setItem("skill_history", JSON.stringify(newHistory));
   };
 
-  // --- GÜNCELLENEN KISIM BAŞLANGICI ---
   const handleGenerate = async (additionalContext?: string) => {
     if (!input.trim()) return;
 
     setIsLoading(true);
-    setError(null); // Önceki hataları temizle
+    setError(null); // Clear previous errors
 
-    // Prompt'u zenginleştir (Kullanıcının seçtiği teknolojileri ekle)
-    // Eğer SkillEditor veya PromptInput'tan gelen raw context varsa onu kullan, yoksa state'tekini al
+    // Enhance prompt with selected tech stack
+    // If context comes from SkillEditor or PromptInput use it, otherwise use state
     const techContext = additionalContext || selectedTechs.join(", ");
     const finalPrompt = techContext
       ? `${input}\n\nTechnical Stack & Requirements: ${techContext}`
       : input;
 
     try {
-      // API'ye istek at
+      // Call API
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
@@ -92,11 +91,11 @@ export default function Home() {
         throw new Error(data.error || "Failed to generate skill");
       }
 
-      // API'den gelen gerçek veri
+      // Real API response
       const newOutput = data.output;
       setOutput(newOutput);
 
-      // Başarılı olursa geçmişe kaydet
+      // Save to history on success
       const newItem: HistoryItem = {
         id: crypto.randomUUID(),
         timestamp: Date.now(),
@@ -115,7 +114,6 @@ export default function Home() {
       setIsLoading(false);
     }
   };
-  // --- GÜNCELLENEN KISIM SONU ---
 
   const restoreHistory = (item: HistoryItem | any) => {
     setInput(item.prompt);
@@ -127,7 +125,7 @@ export default function Home() {
       }
       setOutput("");
     }
-    // Hata varsa temizle
+    // Clear error
     setError(null);
   };
 
@@ -226,7 +224,7 @@ export default function Home() {
 
         {/* Left Column: Input */}
         <section className="w-full md:w-1/2 border-r border-zinc-900 h-full overflow-y-auto relative">
-          {/* Hata Mesajı Gösterimi (Eğer hata varsa input alanının üstünde göster) */}
+          {/* Error Message Display */}
           {error && (
             <div className="mx-6 mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg flex items-center gap-2 text-red-200 text-sm">
               <AlertTriangle className="w-4 h-4 text-red-500" />

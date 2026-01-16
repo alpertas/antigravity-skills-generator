@@ -171,8 +171,7 @@ Output: Create a \`SKILL.md\` file that teaches an AI agent how to reproduce thi
         )}
 
         <div className="flex justify-between items-center pt-2">
-             <div className="flex items-center space-x-2">
-            {/* Tone selector removed */}
+          <div className="flex items-center space-x-2">
              </div>
           <div className={`text-xs ${input.length > 0 && (input.length < MIN_CHARS || input.length > MAX_CHARS) ? "text-red-400 font-bold" : "text-zinc-600"}`}>
             {input.length} / {MAX_CHARS} chars
