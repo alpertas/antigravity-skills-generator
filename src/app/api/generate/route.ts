@@ -45,6 +45,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
         }
 
+        if (prompt.length < 10 || prompt.length > 100000) {
+            return NextResponse.json({ error: "Prompt must be between 10 and 100,000 characters." }, { status: 400 });
+        }
+
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
             return NextResponse.json({ error: "API Key not configured" }, { status: 500 });

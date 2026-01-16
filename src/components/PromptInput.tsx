@@ -15,6 +15,9 @@ interface PromptInputProps {
 
 
 
+const MIN_CHARS = 10;
+const MAX_CHARS = 100000;
+
 const EXAMPLES = [
   "Create a Python script using BeautifulSoup to scrape product prices from an e-commerce site and save them to a CSV file.",
   "Build a React Native music player with Expo AV, including play/pause/skip controls and a progress bar.",
@@ -171,8 +174,8 @@ Output: Create a \`SKILL.md\` file that teaches an AI agent how to reproduce thi
              <div className="flex items-center space-x-2">
             {/* Tone selector removed */}
              </div>
-             <div className="text-xs text-zinc-600">
-               {input.length} chars
+          <div className={`text-xs ${input.length > 0 && (input.length < MIN_CHARS || input.length > MAX_CHARS) ? "text-red-400 font-bold" : "text-zinc-600"}`}>
+            {input.length} / {MAX_CHARS} chars
              </div>
         </div>
       </div>
@@ -185,7 +188,7 @@ Output: Create a \`SKILL.md\` file that teaches an AI agent how to reproduce thi
 
         <button
           onClick={onGenerateClick}
-          disabled={!input || isGenerating}
+          disabled={!input || isGenerating || input.length < MIN_CHARS || input.length > MAX_CHARS}
           className={`w-full group relative flex items-center justify-center space-x-2 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${activeTab === "reverse"
               ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-indigo-900/20"
               : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-purple-900/20"

@@ -209,7 +209,7 @@ export default function Home() {
             className="text-zinc-500 hover:text-zinc-300 transition-colors flex items-center space-x-2 text-sm"
           >
             <Github className="w-4 h-4" />
-            <span>GitHub</span>
+            <span>alpertas/antigravity-skills-generator - open source</span>
           </a>
         </div>
       </header>
