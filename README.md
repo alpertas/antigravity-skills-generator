@@ -120,6 +120,24 @@ Contributions are what make the open-source community such an amazing place to l
 
 ---
 
+## 🗺️ Roadmap & Todo
+
+We have big plans for Antigravity Skill Architect! Here is what we are working on. Feel free to pick a task and open a PR.
+
+### ✅ Completed
+- [x] **Core:** Text-to-Skill Generation (Gemini 1.5).
+- [x] **Core:** Reverse Engineering (Code-to-Skill).
+- [x] **UX:** Shared URLs (Viral Loop).
+- [x] **Architecture:** Client-side only (No backend required).
+
+### 🚧 In Progress / Planned
+- [ ] **Feature:** Support for **Local LLMs** (Ollama/Llama 3) for completely offline usage.
+- [ ] **Feature:** "Diff Viewer" to compare generated skills with previous versions.
+- [ ] **Feature:** Import code directly from a **GitHub URL** (instead of copy-pasting).
+- [ ] **UI:** Syntax Highlighting for the Code Editor input.
+- [ ] **Content:** Add more "Tech Stack" presets (Vue, Svelte, Go, Rust, Laravel).
+- [ ] **Infra:** Migrate to **Gemini 2.0 Flash** (waiting for stable rate limits).
+
 ## ☕️ Support
 
 This project is free and open-source. If it saves you time or helps you build better agents, you can support the development:
